@@ -123,7 +123,7 @@ Terraform is an open-source infrastructure as code (IaC) tool created by HashiCo
      }
      ```
 
-Sure! Here’s how you can create an AWS EC2 instance using Terraform, including the relevant notes for the process:
+
 
 ---
 
