@@ -17,8 +17,8 @@
    - Prerequisites
      - Terraform Installed
      - AWS CLI Installed and Configured
-   - Steps to Create an EC2 Instance
-     - Create a Directory for Your Terraform Configuration
+   - Steps to Create an [EC2 Instance](./aws-concept.md)
+     - Create a Directory for Your [Terraform Configuration](./terraform-confi-file.md)
      - Create a Main Configuration File
      - Initialize Terraform
      - Plan the Deployment
@@ -27,7 +27,7 @@
      - Destroy the Instance (Optional)
    - Notes
      - AMI ID
-     - Instance Type
+     - [Instance Type](./aws-concept.md)
      - Terraform State
 
 4. **[Use of Terraform](#use-of-terraform)**
