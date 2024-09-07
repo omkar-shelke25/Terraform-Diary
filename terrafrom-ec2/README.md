@@ -6,7 +6,7 @@
 
 2. **[Terraform Configuration Files](#terraform-configuration-files)**
    - Components of a Terraform Configuration File
-     - Provider Block
+     - [Provider Block](./terraform-basic.md)
      - Resource Block
      - Variable Block
      - Output Block
@@ -44,6 +44,8 @@
    - `terraform plan`
    - `terraform apply`
    - `terraform destroy`
+
+
 
 
 
