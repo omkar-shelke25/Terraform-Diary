@@ -20,6 +20,7 @@ You will be prompted to enter the following information:
 - **AWS Secret Access Key**: Provided when creating the access key.
 - **Default region name**: (Optional) The AWS region you'd like to use, such as `us-west-2` or `us-east-1`.
 - **Default output format**: (Optional) Choose a format for output like `json`, `text`, or `table`.
+![aws-config](image.png)
 
 ## Example:
 ```bash
