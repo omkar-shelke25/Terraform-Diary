@@ -85,7 +85,7 @@ This will authenticate you to AWS using the CLI, allowing you to make API reques
       ]
   }
   ```
-  ![list]](image-1.png)
+  ![list](image-1.png)
 
 - **Output Fields**:
   - **`UserName`**: IAM user’s name.
