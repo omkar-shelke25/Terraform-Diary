@@ -1,5 +1,4 @@
 
-
 # Access Keys for AWS IAM Users and Root Users
 
 - **Definition**: Access keys are long-term credentials for an IAM user or the AWS account root user. They can be used to sign programmatic requests to the AWS CLI or AWS API (directly or using the AWS SDK).
@@ -27,9 +26,7 @@ Both the **Access Key ID** and **Secret Access Key** must be used together to au
 
 ##
 
-Here are the notes based on the provided raw information:
 
----
 
 # Creating an Access Key for an IAM User
 
