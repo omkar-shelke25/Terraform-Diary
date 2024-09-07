@@ -16,7 +16,7 @@
 3. **[Creating an AWS EC2 Instance Using Terraform](#creating-an-aws-ec2-instance-using-terraform)**
    - Prerequisites
      - Terraform Installed
-     - AWS CLI Installed and Configured
+     - [AWS CLI Installed and Configured](./aws-config.md)
    - Steps to Create an [EC2 Instance](./aws-concept.md)
      - Create a Directory for Your [Terraform Configuration](./terraform-confi-file.md)
      - Create a Main Configuration File
