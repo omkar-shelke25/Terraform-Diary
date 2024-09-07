@@ -44,3 +44,58 @@ If you have access, it will list your S3 buckets; otherwise, you'll see an error
 - You can update your configuration anytime by running `aws configure` again or manually editing the credentials file.
   
 This will authenticate you to AWS using the CLI, allowing you to make API requests and manage your resources programmatically.
+
+
+
+## `aws iam list-access-keys` Command
+
+- **Description**: Lists access keys for an IAM user.
+- **Syntax**: 
+  ```bash
+  aws iam list-access-keys [--user-name <username>]
+  ```
+  - **`--user-name <username>`**: (Optional) Specify the IAM user; if omitted, lists access keys for the current IAM user.
+
+- **Example Commands**:
+  - List access keys for the current IAM user:
+    ```bash
+    aws iam list-access-keys
+    ```
+  - List access keys for a specific IAM user:
+    ```bash
+    aws iam list-access-keys --user-name Bob
+    ```
+
+- **Example Output**:
+  ```json
+  {
+      "AccessKeyMetadata": [
+          {
+              "UserName": "Bob",
+              "AccessKeyId": "AKIAIOSFODNN7EXAMPLE",
+              "Status": "Active",
+              "CreateDate": "2015-03-09T18:39:23.411Z"
+          },
+          {
+              "UserName": "Bob",
+              "AccessKeyId": "AKIAIOSFODNN7ANOTHER",
+              "Status": "Inactive",
+              "CreateDate": "2016-05-15T10:12:34.567Z"
+          }
+      ]
+  }
+  ```
+  ![list]](image-1.png)
+
+- **Output Fields**:
+  - **`UserName`**: IAM user’s name.
+  - **`AccessKeyId`**: Unique identifier of the access key.
+  - **`Status`**: Key status (`Active` or `Inactive`).
+  - **`CreateDate`**: Date and time when the key was created.
+
+- **Permissions Required**: `iam:ListAccessKeys` action must be allowed in the IAM policy.
+
+- **Common Error**: `AccessDenied` if permissions are insufficient.
+
+- **Security Note**: Handle access keys securely and follow best practices.
+
