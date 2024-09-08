@@ -1,12 +1,13 @@
 
-
 # **Creating an AWS EC2 Instance using Terraform**
 
 ### **Requirements:**
-- [AWS EC2 instance](./notes/aws-concept.md)
-- [Key pair (for SSH access)](/terrafrom-ec2/notes/key-pair.md)
-- [AWS IAM user](./notes/IAM.md)
-- [AWS CLI configuration](./notes/aws-config.md)
+- [AWS EC2 instance](https://aws.amazon.com/ec2/)  
+- [Key pair (for SSH access)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html)  
+- [AWS IAM user](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)  
+- [AWS CLI configuration](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)  
+
+---
 
 ### **Step 1: AWS CLI Login**
 
@@ -14,9 +15,10 @@ To start, log in to AWS using the CLI and configure your credentials:
 ```bash
 aws configure
 ```
-- Enter your **Access Key**, **Secret Access Key**, and **Region**. 
-  - If you don't know them, follow the [link](./notes/aws-config.md) provided by AWS to retrieve them.
+- Enter your **Access Key**, **Secret Access Key**, and **Region**.
+  - If you don't know them, refer to [AWS CLI Configuration Guide](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
   - The region is essential for Terraform to know where to launch resources (e.g., `ap-south-1` for India).
+
 ---
 
 ### **Step 2: Create a User via AWS CLI**
@@ -26,12 +28,12 @@ Create an IAM user with the required permissions:
 aws iam create-user --user-name omkara
 ```
 
-#### **Assign Administrator Access to the User:**
+#### **Assign Administrator Access to the User**:
 ```bash
 aws iam attach-user-policy --user-name omkara --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
 ```
 
-#### **Generate [Access Keys](./notes/access-key.md) for Terraform Configuration:**
+#### **Generate [Access Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html) for Terraform Configuration**:
 ```bash
 aws iam create-access-key --user-name omkara
 ```
@@ -58,7 +60,7 @@ After this, run `chmod 400 my-key-pair.pem` to set secure permissions, and use t
 
 ---
 
-## [**Terraform Configuration**](./notes/terraform-confi-file.md)
+### [**Terraform Configuration**](https://developer.hashicorp.com/terraform/language)
 
 The Terraform configuration is made up of the following components:
 
@@ -101,7 +103,7 @@ resource "aws_instance" "jenkins-server" {
 
 ### **Terraform Commands:**
 
-1. **terraform init**
+1. **[terraform init](https://developer.hashicorp.com/terraform/cli/commands/init)**
    - **Purpose**: Initializes the Terraform configuration and downloads the necessary provider plugins (in this case, AWS).
    - **Use**: Run this before any other Terraform command to set up your working directory.
    
@@ -109,7 +111,7 @@ resource "aws_instance" "jenkins-server" {
    terraform init
    ```
 
-2. **terraform plan**
+2. **[terraform plan](https://developer.hashicorp.com/terraform/cli/commands/plan)**
    - **Purpose**: Runs a "dry run" to show you what resources will be created, modified, or destroyed.
    - **Use**: It is good practice to run this command before applying changes to verify the configuration.
    
@@ -117,7 +119,7 @@ resource "aws_instance" "jenkins-server" {
    terraform plan
    ```
 
-3. **terraform apply**
+3. **[terraform apply](https://developer.hashicorp.com/terraform/cli/commands/apply)**
    - **Purpose**: Applies the Terraform configuration and asks for confirmation before creating resources.
    - **Use**: After reviewing the plan, run this command to create the EC2 instance. Enter "yes" when prompted.
    
@@ -125,7 +127,7 @@ resource "aws_instance" "jenkins-server" {
    terraform apply
    ```
 
-4. **terraform destroy**
+4. **[terraform destroy](https://developer.hashicorp.com/terraform/cli/commands/destroy)**
    - **Purpose**: Destroys the resources managed by Terraform, including the EC2 instance.
    - **Use**: Be careful when using this command, as it will delete the resources.
    
@@ -141,10 +143,18 @@ resource "aws_instance" "jenkins-server" {
 
 ---
 
-### **Conclusion:**
+### **Conclusion**:
 By following these steps, you can create an AWS EC2 instance using Terraform. The process involves logging into AWS via the CLI, setting up a user with the necessary permissions, configuring Terraform, and using key commands such as `terraform init`, `plan`, `apply`, and `destroy`.
 
 These commands help you manage your infrastructure as code, providing a more streamlined and consistent approach to resource management in the cloud.
 
---- 
+---
+
+### **Official Documentation Links**:
+- [Terraform Official Documentation](https://developer.hashicorp.com/terraform/docs)
+- [AWS EC2 Documentation](https://aws.amazon.com/ec2/)
+- [AWS CLI Documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html)
+- [AWS IAM Documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html)
+
+---
 
