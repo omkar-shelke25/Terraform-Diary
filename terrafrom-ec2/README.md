@@ -31,7 +31,7 @@ aws iam create-user --user-name omkara
 aws iam attach-user-policy --user-name omkara --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
 ```
 
-#### **Generate Access Keys for Terraform Configuration:**
+#### **Generate [Access Keys](./notes/access-key.md) for Terraform Configuration:**
 ```bash
 aws iam create-access-key --user-name omkara
 ```
@@ -58,7 +58,7 @@ After this, run `chmod 400 my-key-pair.pem` to set secure permissions, and use t
 
 ---
 
-## **Terraform Configuration**
+## [**Terraform Configuration**](./notes/terraform-confi-file.md)
 
 The Terraform configuration is made up of the following components:
 
@@ -92,7 +92,6 @@ resource "aws_instance" "jenkins-server" {
 ### **Explanation of Parameters**:
 - **Provider Block**:
   - **region**: Specifies the AWS region (e.g., `ap-south-1` for India).
-  
 - **Resource Block**:
   - **ami**: Amazon Machine Image ID, which defines the operating system and software for the instance.
   - **instance_type**: Defines the instance's computing power (e.g., `t2.micro` is a free-tier eligible, low-cost instance).
