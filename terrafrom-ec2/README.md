@@ -1,227 +1,151 @@
-# Index
-
-1. **[Terraform Overview](#terraform-overview)**
-   - Definition
-   - Key Features
-
-2. **[Terraform Configuration Files](#terraform-configuration-files)**
-   - Components of a Terraform Configuration File
-     - [Provider Block](./terraform-basic.md)
-     - Resource Block
-     - Variable Block
-     - Output Block
-     - Data Sources
-     - Module Block
-
-3. **[Creating an AWS EC2 Instance Using Terraform](#creating-an-aws-ec2-instance-using-terraform)**
-   - Prerequisites
-     - Terraform Installed
-     - [AWS CLI Installed and Configured](./aws-config.md)
-   - Steps to Create an [EC2 Instance](./aws-concept.md)
-     - Create a Directory for Your Terraform Configuration
-     - Create a Main [Configuration File](./terraform-confi-file.md)
-     - Initialize Terraform
-     - Plan the Deployment
-     - Apply the Configuration
-     - Check the Output
-     - Destroy the Instance (Optional)
-   - Notes
-     - AMI ID
-     - [Instance Type](./aws-concept.md)
-     - Terraform State
-
-4. **[Use of Terraform](#use-of-terraform)**
-   - Infrastructure Provisioning
-   - Benefits
-     - Consistency
-     - Reusability
-     - Version Control
-     - State Management
-     - Multi-Provider Support
-
-5. **[Common Commands](#common-commands)**
-   - `terraform init`
-   - `terraform plan`
-   - `terraform apply`
-   - `terraform destroy`
 
 
+# **Creating an AWS EC2 Instance using Terraform**
 
+### **Requirements:**
+- [AWS EC2 instance](./notes/aws-concept.md)
+- [Key pair (for SSH access)](/terrafrom-ec2/notes/key-pair.md)
+- [AWS IAM user](./notes/IAM.md)
+- [AWS CLI configuration](./notes/aws-config.md)
 
+### **Step 1: AWS CLI Login**
 
-## Provisioning an AWS EC2 Instance with Terraform
+To start, log in to AWS using the CLI and configure your credentials:
+```bash
+aws configure
+```
+- Enter your **Access Key**, **Secret Access Key**, and **Region**. 
+  - If you don't know them, follow the [link](./notes/aws-config.md) provided by AWS to retrieve them.
+  - The region is essential for Terraform to know where to launch resources (e.g., `ap-south-1` for India).
+---
 
-## Terraform Overview
+### **Step 2: Create a User via AWS CLI**
 
-### Definition
-Terraform is an open-source infrastructure as code (IaC) tool created by HashiCorp. It allows users to define and provision infrastructure using a high-level configuration language, known as HashiCorp Configuration Language (HCL), or JSON. Terraform can manage various infrastructure components such as virtual machines, networks, and storage, across multiple cloud providers and on-premises environments.
+Create an IAM user with the required permissions:
+```bash
+aws iam create-user --user-name omkara
+```
 
-### Key Features
-- **Declarative Configuration**: Users define what they want their infrastructure to look like, and Terraform figures out how to achieve that state.
-- **Version Control**: Terraform configurations can be versioned and treated like code, which enables tracking changes and collaboration.
-- **Provider Support**: Terraform supports numerous cloud providers and services through plugins called providers.
-- **State Management**: Terraform maintains a state file that tracks the resources it manages, ensuring that changes are applied correctly and consistently.
+#### **Assign Administrator Access to the User:**
+```bash
+aws iam attach-user-policy --user-name omkara --policy-arn arn:aws:iam::aws:policy/AdministratorAccess
+```
 
-## Terraform Configuration Files
-
-### Components of a Terraform Configuration File
-1. **Provider Block**
-   - Defines the provider (e.g., AWS, Azure, Google Cloud) that Terraform will use to manage resources.
-   - Example:
-     ```hcl
-     provider "aws" {
-       region = "us-east-1"
-     }
-     ```
-
-2. **Resource Block**
-   - Defines the infrastructure resources to be created or managed.
-   - Example:
-     ```hcl
-     resource "aws_instance" "example" {
-       ami           = "ami-0c55b159cbfafe1f0"
-       instance_type = "t2.micro"
-     }
-     ```
-
-3. **Variable Block**
-   - Defines variables that can be used to customize configurations.
-   - Example:
-     ```hcl
-     variable "instance_type" {
-       type    = string
-       default = "t2.micro"
-     }
-     ```
-
-4. **Output Block**
-   - Defines outputs that are returned after Terraform applies the configuration, which can be used for referencing values in other configurations.
-   - Example:
-     ```hcl
-     output "instance_id" {
-       value = aws_instance.example.id
-     }
-     ```
-
-5. **Data Sources**
-   - Allows Terraform to fetch data from external sources or existing infrastructure.
-   - Example:
-     ```hcl
-     data "aws_ami" "latest_amazon_linux" {
-       most_recent = true
-       owners      = ["amazon"]
-     }
-     ```
-
-6. **Module Block**
-   - Allows for the reuse of configurations by creating reusable components.
-   - Example:
-     ```hcl
-     module "vpc" {
-       source = "./modules/vpc"
-       name   = "my-vpc"
-     }
-     ```
-
-
+#### **Generate Access Keys for Terraform Configuration:**
+```bash
+aws iam create-access-key --user-name omkara
+```
+This command will return an `AccessKeyId` and `SecretAccessKey`. **Copy them carefully** and save them in a secure location, as they are required for Terraform.
 
 ---
 
-## Creating an AWS EC2 Instance Using Terraform
+### **Step 3: Key Pair for EC2 Instance**
 
-### Prerequisites
-- **Terraform Installed**: Ensure that Terraform is installed on your local machine. You can download it from [Terraform's official website](https://www.terraform.io/downloads.html).
-- **AWS CLI Installed and Configured**: Install and configure the AWS CLI with your AWS credentials. You can configure it using `aws configure` command.
+You will also need a **key pair** to access your EC2 instance via SSH. You can create this using the AWS Management Console or CLI:
 
-### Steps to Create an EC2 Instance
+The command creates an SSH key pair in AWS and saves the private key locally for EC2 instance access.
 
-1. **Create a Directory for Your Terraform Configuration**
-   ```bash
-   mkdir terraform-ec2
-   cd terraform-ec2
-   ```
+```bash
+aws ec2 create-key-pair --key-name my-key-pair --query 'KeyMaterial' --output text > my-key-pair.pem
+```
 
-2. **Create a Main Configuration File**
-   Create a file named `main.tf` with the following content:
+#### **Explanation**:
+- **`--key-name my-key-pair`**: Creates a key pair named "my-key-pair."
+- **`--query 'KeyMaterial'`**: Extracts only the private key content.
+- **`--output text > my-key-pair.pem`**: Saves the private key to a file called `my-key-pair.pem`.
 
-   ```hcl
-   # Specify the provider
-   provider "aws" {
-     region = "us-east-1"  # Change to your preferred region
-   }
+After this, run `chmod 400 my-key-pair.pem` to set secure permissions, and use this key to SSH into your EC2 instance.
 
-   # Define the EC2 instance resource
-   resource "aws_instance" "example" {
-     ami           = "ami-0c55b159cbfafe1f0"  # Update with the latest Amazon Linux 2 AMI ID for your region
-     instance_type = "t2.micro"
+---
 
-     tags = {
-       Name = "example-instance"
-     }
-   }
+## **Terraform Configuration**
 
-   # Output the instance ID
-   output "instance_id" {
-     value = aws_instance.example.id
-   }
-   ```
+The Terraform configuration is made up of the following components:
 
-   **Explanation**:
-   - **provider** block: Specifies the AWS region.
-   - **resource** block: Defines an `aws_instance` resource with an Amazon Machine Image (AMI) and instance type. Adjust the AMI ID and instance type as needed.
-   - **output** block: Outputs the instance ID after the instance is created.
+1. **Provider**: Specifies the provider (AWS, in this case) and its region.
+2. **Resource**: Defines the resource being created (an EC2 instance here).
+3. **Output**: (Optional) Used to display information.
+4. **Variable**: (Optional) Parameters to make the configuration dynamic.
+5. **Data Sources**: (Optional) External information sources.
 
-3. **Initialize Terraform**
-   Run the following command to initialize your Terraform workspace. This will download the necessary provider plugins.
+For EC2 creation, we'll focus on **provider** and **resource** blocks.
+
+---
+
+### **Terraform Configuration File**
+
+Here’s a simple configuration file to create an EC2 instance:
+
+```hcl
+provider "aws" {
+  alias  = "india"
+  region = "ap-south-1"
+}
+
+resource "aws_instance" "jenkins-server" {
+  ami             = "ami-0e53db6fd757e38c7" # Amazon Machine Image ID
+  instance_type   = "t2.micro"              # EC2 instance type
+  key_name        = "ec2-login"             # Name of the SSH key pair
+}
+```
+
+### **Explanation of Parameters**:
+- **Provider Block**:
+  - **region**: Specifies the AWS region (e.g., `ap-south-1` for India).
+  
+- **Resource Block**:
+  - **ami**: Amazon Machine Image ID, which defines the operating system and software for the instance.
+  - **instance_type**: Defines the instance's computing power (e.g., `t2.micro` is a free-tier eligible, low-cost instance).
+  - **key_name**: The name of the key pair used to SSH into the EC2 instance.
+
+---
+
+### **Terraform Commands:**
+
+1. **terraform init**
+   - **Purpose**: Initializes the Terraform configuration and downloads the necessary provider plugins (in this case, AWS).
+   - **Use**: Run this before any other Terraform command to set up your working directory.
+   
    ```bash
    terraform init
    ```
 
-4. **Plan the Deployment**
-   Generate and review an execution plan to see what Terraform will do before applying changes.
+2. **terraform plan**
+   - **Purpose**: Runs a "dry run" to show you what resources will be created, modified, or destroyed.
+   - **Use**: It is good practice to run this command before applying changes to verify the configuration.
+   
    ```bash
    terraform plan
    ```
 
-5. **Apply the Configuration**
-   Apply the configuration to create the EC2 instance.
+3. **terraform apply**
+   - **Purpose**: Applies the Terraform configuration and asks for confirmation before creating resources.
+   - **Use**: After reviewing the plan, run this command to create the EC2 instance. Enter "yes" when prompted.
+   
    ```bash
    terraform apply
    ```
-   Confirm the action by typing `yes` when prompted.
 
-6. **Check the Output**
-   After applying the configuration, Terraform will display the instance ID as specified in the `output` block.
-
-7. **Destroy the Instance (Optional)**
-   If you want to remove the EC2 instance, run:
+4. **terraform destroy**
+   - **Purpose**: Destroys the resources managed by Terraform, including the EC2 instance.
+   - **Use**: Be careful when using this command, as it will delete the resources.
+   
    ```bash
    terraform destroy
    ```
-   Confirm the action by typing `yes` when prompted.
 
-### Notes
-- **AMI ID**: Ensure you use the correct AMI ID for the region you are working in. You can find the latest AMI IDs in the AWS Management Console or use the AWS CLI to list available AMIs.
-- **Instance Type**: `t2.micro` is eligible for the AWS Free Tier. You may choose a different instance type based on your requirements.
-- **Terraform State**: Terraform maintains a state file to track the resources it manages. This file is crucial for applying updates and performing destroy operations.
+---
 
+### **Important Notes**:
+- Since you are already logged in via the AWS CLI, you don't need to mention AWS credentials in the Terraform file.
+- In cases where you want to manage resources without the CLI login, you can include the `AccessKey` and `SecretAccessKey` in the Terraform provider block, but this is not recommended due to security risks.
 
-## Use of Terraform
+---
 
-### Infrastructure Provisioning
-Terraform automates the process of provisioning infrastructure by using configuration files to describe the desired state. This includes creating and managing virtual machines, databases, networks, and other resources across various cloud providers and on-premises environments.
+### **Conclusion:**
+By following these steps, you can create an AWS EC2 instance using Terraform. The process involves logging into AWS via the CLI, setting up a user with the necessary permissions, configuring Terraform, and using key commands such as `terraform init`, `plan`, `apply`, and `destroy`.
 
-### Benefits
-1. **Consistency**: Ensures that infrastructure is created and managed in a consistent manner, reducing configuration drift.
-2. **Reusability**: Allows for the reuse of configurations and modules, which improves efficiency and reduces duplication.
-3. **Version Control**: Configuration files can be versioned and tracked, enabling collaboration and change management.
-4. **State Management**: Keeps track of the state of infrastructure, allowing for accurate updates and rollbacks.
-5. **Multi-Provider Support**: Provides a unified way to manage infrastructure across different providers using a single tool.
+These commands help you manage your infrastructure as code, providing a more streamlined and consistent approach to resource management in the cloud.
 
-
-## Common Commands
-1. `terraform init` - Initializes the working directory and downloads necessary provider plugins.
-2. `terraform plan` - Creates an execution plan to show what actions will be taken without making changes.
-3. `terraform apply` - Applies the changes required to reach the desired state defined in the configuration files.
-4. `terraform destroy` - Removes all infrastructure managed by the current configuration.
+--- 
 
