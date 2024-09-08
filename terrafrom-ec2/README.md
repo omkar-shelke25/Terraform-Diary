@@ -18,8 +18,8 @@
      - Terraform Installed
      - [AWS CLI Installed and Configured](./aws-config.md)
    - Steps to Create an [EC2 Instance](./aws-concept.md)
-     - Create a Directory for Your [Terraform Configuration](./terraform-confi-file.md)
-     - Create a Main Configuration File
+     - Create a Directory for Your Terraform Configuration
+     - Create a Main [Configuration File](./terraform-confi-file.md)
      - Initialize Terraform
      - Plan the Deployment
      - Apply the Configuration
