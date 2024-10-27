@@ -93,7 +93,7 @@ module "vpc" {
     - In Terraform certification, understanding `for_each` demonstrates your ability to use Terraform efficiently.
     - Being aware that `for_each` support in modules began with Terraform 0.13 can be helpful, as certification exams often test knowledge of specific features by version.
 
-5.**Remember:**
+5. **Remember:**
     - `for_each` with a set of strings lets `each.key` and `each.value` be the same.
     - With a **map**, you can use `each.key` and `each.value` for more complex resource configurations.
     - **Count vs. `for_each`**: You must pick either `count` or `for_each` for a single resource or module block; they cannot be combined.
