@@ -1,5 +1,7 @@
 ---
 
+# Terraform Console
+
 ### 1. **Terraform Console**
 
 The **Terraform Console** is a tool for testing and debugging expressions within the Terraform environment. It is helpful for verifying configurations, experimenting with functions, and exploring variables, outputs, or complex expressions without applying changes to infrastructure.
