@@ -1,5 +1,3 @@
----
-
 # **File Provisioner & Connection Block**
 
 Provisioners in Terraform help execute scripts or commands on a resource after it is created. One of the most common provisioners is the **File Provisioner**, which transfers files or directories from your local machine to the target resource, such as an EC2 instance.
